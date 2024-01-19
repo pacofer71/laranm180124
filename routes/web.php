@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TagController;
 use App\Models\Post;
@@ -23,4 +24,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::resource('posts', PostController::class);
-Route::resource('tags', TagController::class);
+Route::resource('tags', TagController::class)->except('show');
+
+Route::get('contacto', [ContactoController::class, 'pintarFormulario'])->name('mail.pintar');
+Route::post('contacto', [ContactoController::class, 'procesarFormulario'])->name('mail.enviar');

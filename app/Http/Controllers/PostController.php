@@ -40,7 +40,7 @@ class PostController extends Controller
             'tags' => ['required', 'array', 'min:1', 'exists:tags,id']
         ]);
         //Guardo el post
-        $post=Post::create(
+        $post = Post::create(
             [
                 'titulo' => $request->titulo,
                 'contenido' => $request->contenido,
@@ -66,7 +66,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        $tagsPost=$post->getPostTagsId();
+        $tagsPost = $post->getPostTagsId();
         $tags = Tag::select('id', 'nombre')->orderBy('nombre')->get();
         return view('posts.edit', compact('post', 'tags', 'tagsPost'));
     }
@@ -76,7 +76,33 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $request->validate([
+            'titulo' => ['required', 'string', 'min:3', 'unique:posts,titulo,' . $post->id],
+            'contenido' => ['required', 'string', 'min:10'],
+            'imagen' => ['nullable', 'image', 'max:2048'],
+            'estado' => ['nullable'],
+            'tags' => ['required', 'array', 'min:1', 'exists:tags,id']
+        ]);
+        $ruta = $post->imagen;
+        if ($request->imagen) {
+            if (basename($post->imagen) != 'default.jpg') {
+                Storage::delete($post->imagen);
+            }
+            $ruta = $request->imagen->store('posts');
+        }
+        //Actualizamos el post
+        $post->update([
+            'titulo' => $request->titulo,
+            'contenido' => $request->contenido,
+            'imagen' => $ruta,
+            'estado' => ($request->estado) ? "PUBLICADO" : "BORRADOR",
+        ]);
+        //Actualizamos sus etiquetas
+        $post->tags()->sync($request->tags);
+
+        return redirect()->route('posts.index')->with('info', 'Se actualizó el Post');
+
+
     }
 
     /**
@@ -85,7 +111,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //Borramos la imagen asociada al post si no es post/default.jpg
-        if(basename($post->imagen)!='default.jpg'){
+        if (basename($post->imagen) != 'default.jpg') {
             Storage::delete($post->imagen);
         }
         $post->delete();

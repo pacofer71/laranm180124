@@ -27,14 +27,38 @@
                 <ul
                     class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                     <li>
-                        <a href="{{ route('home') }}" class="block py-2 px-3 rounded text-blue-500"
+                        <a href="{{ route('home') }}" @class([
+                            "block py-2 px-3 rounded",
+                            "text-blue-500"=>request()->routeIs('home')
+                        ])
                             aria-current="page"><i class="fas fa-home mr-2"></i>Home
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('posts.index') }}" class="block py-2 px-3 rounded text-black dark:text-white"
+                        <a href="{{ route('posts.index') }}"  @class([
+                            "block py-2 px-3 rounded",
+                            "text-blue-500"=>request()->routeIs('posts.*')
+                        ])
                             aria-current="page">
                             <i class="fas fa-gears mr-2"></i> Gestionar Posts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('tags.index') }}"  @class([
+                            "block py-2 px-3 rounded",
+                            "text-blue-500"=>request()->routeIs('tags.*')
+                        ])
+                            aria-current="page">
+                            <i class="fas fa-tags mr-2"></i> Gestionar Etiquetas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('mail.pintar') }}"  @class([
+                            "block py-2 px-3 rounded",
+                            "text-blue-500"=>request()->routeIs('mail.pintar')
+                        ])
+                            aria-current="page">
+                            <i class="fa-regular fa-envelope mr-2"></i> Contáctanos
                         </a>
                     </li>
 

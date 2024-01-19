@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use LVR\Colour\Hex;
 
 class TagController extends Controller
 {
@@ -12,7 +13,8 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $tags=Tag::orderBy('nombre')->paginate(10);
+        return view('tags.index', compact('tags'));
     }
 
     /**
@@ -20,7 +22,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        //
+        return view('tags.create');
     }
 
     /**
@@ -28,23 +30,23 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //return $request->color;
+        $request->validate([
+            'nombre'=>['required', 'string', 'min:3', 'unique:tags,nombre'],
+            'color'=>['required', new Hex]
+        ]);
+        Tag::create($request->all());
+
+        return redirect()->route('tags.index')->with('info', "Etiqueta Guardada");
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
-    {
-        //
-    }
-
+  
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Tag $tag)
     {
-        //
+        return view('tags.edit', compact('tag'));
     }
 
     /**
@@ -52,7 +54,13 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        $request->validate([
+            'nombre'=>['required', 'string', 'min:3', 'unique:tags,nombre,'.$tag->id],
+            'color'=>['required', new Hex]
+        ]);
+        $tag->update($request->all());
+
+        return redirect()->route('tags.index')->with('info', "Etiqueta Editada");
     }
 
     /**
@@ -60,6 +68,7 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        $tag->delete();
+        return redirect()->route('tags.index')->with('info', "Etiqueta Borrada");
     }
 }
